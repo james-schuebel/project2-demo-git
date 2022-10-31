@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-class Expr extends BaseToken implements Checkable {
+class Expr extends BaseToken  {
   int typeNumber;
   String charStr, id;
   int intlit;
@@ -109,99 +109,5 @@ class Expr extends BaseToken implements Checkable {
   }
   public boolean isFunction() throws Exception {
     return name != null && name.isFunction() || typeNumber == 5 && expr[0].isFunction();
-  }
-
-  public SymTable.Type typeCheck() throws Exception {
-    switch (this.typeNumber) {
-      case 0: // strlit
-        return SymTable.Type.STRING;
-      case 12: // charlit
-        return SymTable.Type.CHAR;
-      case 1: // intlit
-        return SymTable.Type.INT;
-      case 2: // floatlit
-        return SymTable.Type.FLOAT;
-      case 3: // var or array index
-        return name.typeCheck();
-      case 4: // boollit
-        return SymTable.Type.BOOL;
-      case 5: // value in parenthesis
-        return expr[0].typeCheck();
-      case 6: // unary ops
-        if (unaryOp.equals("~")) {
-          if (!canBeBool(expr[0]))
-            throw new UnaryLogicalException();
-          return SymTable.Type.BOOL;
-        } else {
-          if (!canBeFloat(expr[0]))
-            throw new SignedValueException();
-          return expr[0].typeCheck();
-        }        
-      case 7: // casting
-        return getType(castType); // casting special case?
-      case 8: // binary ops
-        if (expr[0].typeCheck().equals(SymTable.Type.STRING) || expr[1].typeCheck().equals(SymTable.Type.STRING)) {
-          if (!binOp.op.equals("+"))
-            throw new StringOperationException();
-          return SymTable.Type.STRING;
-        }
-        if (binOp.isArithmetic()) {
-          if ( !canBeFloat(expr[0]) && !canBeFloat(expr[1]) )
-            throw new BinaryExpressionException(
-              binOp.op,
-              ( canBeFloat(expr[0]) ? expr[0].typeCheck() : expr[1].typeCheck() ),
-              ( canBeFloat(expr[0]) ? expr[0].isArray() : expr[1].isArray() )
-            );
-          return expr[0].typeCheck().equals(SymTable.Type.FLOAT) || expr[1].typeCheck().equals(SymTable.Type.FLOAT)
-            ? SymTable.Type.FLOAT
-            : SymTable.Type.INT;
-        }
-        if (binOp.isRelational()) {
-          if ( !canBeFloat(expr[0]) && !canBeFloat(expr[1]) )
-            throw new BinaryExpressionException(
-              binOp.op, 
-              ( canBeFloat(expr[0]) ? expr[0].typeCheck() : expr[1].typeCheck() ),
-              ( canBeFloat(expr[0]) ? expr[0].isArray() : expr[1].isArray() )
-            );
-          return SymTable.Type.BOOL;
-        }
-        if (binOp.isLogical()) {
-          if ( !canBeBool(expr[0]) && !canBeBool(expr[1]) )
-            throw new BinaryExpressionException(
-              binOp.op, 
-              ( canBeBool(expr[0]) ? expr[0].typeCheck() : expr[1].typeCheck() ),
-              ( canBeBool(expr[0]) ? expr[0].isArray() : expr[1].isArray() )
-            );
-          return SymTable.Type.BOOL;
-        }
-      case 9: // ternary expression
-        if ( !canBeBool(expr[0]) )
-          throw new ConditionExpectedException(expr[0].typeCheck(), expr[0].isArray());
-        if ( !expr[1].typeCheck().equals(expr[2].typeCheck()))
-          throw new TernaryResultException();
-        return expr[1].typeCheck(); 
-      case 10: // function call with args return value
-        SymTable.Var fun = table.getVar(id);
-        if (!fun.isFunction())
-          throw new UndefinedFunctionException(id);
-        if (fun.arguments.size() != args.size())
-          throw new ArgListException(id);
-        for (int i = 0; i < args.size(); i++) {
-          if (!canAssignFrom(args.get(i), fun.arguments.get(i)))
-            throw new ArgListException(
-              id, i,
-              fun.arguments.get(i).typeCheck(),
-              fun.arguments.get(i).isArray(),
-              args.get(i).typeCheck(), 
-              args.get(i).isArray()
-            );
-        }
-        return table.getVar(id).typeCheck();
-      case 11: // function call no args return value
-        if (!table.getVar(id).isFunction())
-          throw new UndefinedFunctionException(id);
-        return table.getVar(id).typeCheck();
-    }
-    return null;
   }
 }
