@@ -27,20 +27,4 @@ class Fielddecl extends BaseToken {
         return "";
     }
   }
-
-  public void typeCheck() throws Exception {
-    switch (declType) {
-      case 0: // var def with optional assign
-        if (opex != null)
-          if (!canConvertFrom(opex.typeCheck(), getType(type)))
-            throw new AssignmentTypeMismatchException(getType(type), opex.typeCheck());
-        if (!table.add(id, (isFinal ? "final" : ""), getType(type), null))
-          throw new RedefinedVariableException(id);
-        break;
-      case 1: // array decl def
-        if (!table.add(id, "array", getType(type), null))
-          throw new RedefinedVariableException(id);
-        break;
-    }
-  }
 }
