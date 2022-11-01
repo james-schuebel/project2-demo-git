@@ -40,12 +40,21 @@ Expr → Name | id ( ) | id ( Args ) | intlit | charlit | strlit | floatlit | tr
 Binaryop → * | / | + | - | < | > | <= | >= | == | <> | \|\| | &&
 
 (), [] Left to Right
+
 (prefix)+, (prefix)-,~,++,-- Right to Left
+
 (type cast) Left to Right
+
 *,/ Left to Right
+
 +,- Left to Right
+
 <,>,<=,>= Left to Right
+
 <>,== Left to Right
+
 && Left to Right
+
 || Left to Right
+
 ?: Right to Lef
