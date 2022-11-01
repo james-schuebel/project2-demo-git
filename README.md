@@ -1,5 +1,5 @@
 ## CS 4386.001, Compiler Design, Fall 2022
-# Project Assignment #1
+# Project Assignment #2 Phase 1
 ### James Schuebel
 
 How to run:
