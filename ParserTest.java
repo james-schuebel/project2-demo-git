@@ -15,7 +15,7 @@ public class ParserTest {
     }
 
     Lexer scanner = new Lexer(reader);
-    parser parser = new parser(scanner);
+    Parser parser = new parser(scanner);
     Program program = null;
 
     try {
